@@ -1,18 +1,18 @@
 "use client";
 
-// This components handles the review dialog and uses a next.js feature known as Server Actions to handle the form submission
+// This components handles the discussion dialog and uses a next.js feature known as Server Actions to handle the form submission
 
 import { useEffect, useLayoutEffect, useRef } from "react";
 import RatingPicker from "@/src/components/RatingPicker.jsx";
-import { handleReviewFormSubmission } from "@/src/app/actions.js";
+import { handleDiscussionFormSubmission } from "@/src/app/actions.js";
 
 const ReviewDialog = ({
   isOpen,
-  handleClose,
-  review,
+  onClose,
+  discussion,
   onChange,
   userId,
-  id,
+  teamId,
 }) => {
   const dialog = useRef();
 
@@ -28,20 +28,20 @@ const ReviewDialog = ({
   const handleClick = (e) => {
     // close if clicked outside the modal
     if (e.target === dialog.current) {
-      handleClose();
+      onClose();
     }
   };
 
   return (
     <dialog ref={dialog} onMouseDown={handleClick}>
       <form
-        action={handleReviewFormSubmission}
+        action={handleDiscussionFormSubmission}
         onSubmit={() => {
-          handleClose();
+          onClose();
         }}
       >
         <header>
-          <h3>Add your review</h3>
+          <h3>Add your discussion</h3>
         </header>
         <article>
           <RatingPicker />
@@ -50,15 +50,15 @@ const ReviewDialog = ({
             <input
               type="text"
               name="text"
-              id="review"
+              id="discussion"
               placeholder="Write your thoughts here"
               required
-              value={review.text}
+              value={discussion.text}
               onChange={(e) => onChange(e.target.value, "text")}
             />
           </p>
 
-          <input type="hidden" name="restaurantId" value={id} />
+          <input type="hidden" name="teamId" value={teamId} />
           <input type="hidden" name="userId" value={userId} />
         </article>
         <footer>
@@ -66,7 +66,7 @@ const ReviewDialog = ({
             <button
               autoFocus
               type="reset"
-              onClick={handleClose}
+              onClick={onClose}
               className="button--cancel"
             >
               Cancel

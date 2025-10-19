@@ -3,7 +3,7 @@
 import React from "react";
 import renderStars from "@/src/components/Stars.jsx";
 
-const RestaurantDetailsBackup = ({
+const TeamDetails = ({
   team,
   userId,
   handleTeamImage,
@@ -63,4 +63,9 @@ const RestaurantDetailsBackup = ({
   );
 };
 
-export default RestaurantDetailsBackup;
+export default TeamDetails;
+
+
+
+
+

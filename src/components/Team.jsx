@@ -12,7 +12,7 @@ import { updateTeamImage } from "@/src/lib/firebase/storage.js";
 
 const DiscussionDialog = dynamic(() => import("@/src/components/DiscussionDialog.jsx"));
 
-export default function RestaurantBackup({
+export default function Team({
   id,
   initialTeam,
   initialUserId,
@@ -64,18 +64,19 @@ export default function RestaurantBackup({
       >
         {children}
       </TeamDetails>
-      {userId && (
-        <Suspense fallback={<p>Loading...</p>}>
-          <DiscussionDialog
-            isOpen={isOpen}
-            onClose={handleClose}
-            teamId={id}
-            userId={userId}
-            discussion={discussion}
-            onChange={onChange}
-          />
-        </Suspense>
-      )}
+      <DiscussionDialog
+        isOpen={isOpen}
+        onClose={handleClose}
+        teamId={id}
+        userId={userId}
+        discussion={discussion}
+        onChange={onChange}
+      />
     </>
   );
 }
+
+
+
+
+

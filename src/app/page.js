@@ -1,9 +1,9 @@
-// Import the RestaurantListings React component
-// This component is responsible for displaying a list of restaurants
-import RestaurantListings from "@/src/components/RestaurantListings.jsx";
+// Import the TeamListings React component
+// This component is responsible for displaying a list of teams
+import TeamListings from "@/src/components/TeamListings.jsx";
 
-// Import a helper function to fetch restaurant data from Firestore
-import { getRestaurants } from "@/src/lib/firebase/firestore.js";
+// Import a helper function to fetch team data from Firestore
+import { getTeams } from "@/src/lib/firebase/firestore.js";
 
 // Import a helper function that returns a Firebase app configured for the currently authenticated user
 import { getAuthenticatedAppForUser } from "@/src/lib/firebase/serverApp.js";
@@ -31,20 +31,20 @@ export default async function Home(props) {
   // This ensures that the Firestore queries are made securely and with the proper permissions
   const { firebaseServerApp } = await getAuthenticatedAppForUser();
 
-  // Fetch restaurants from Firestore based on the search parameters
-  // The getRestaurants() function handles Firestore querying and filtering logic
-  const restaurants = await getRestaurants(
+  // Fetch teams from Firestore based on the search parameters
+  // The getTeams() function handles Firestore querying and filtering logic
+  const teams = await getTeams(
     getFirestore(firebaseServerApp), // Firestore instance for this user
-    searchParams                      // Filters such as city, category, or sort order
+    searchParams                      // Filters such as city, division, or sort order
   );
 
   // Return the JSX to render on the page
-  // It renders a <main> tag containing the RestaurantListings component
-  // The initial list of restaurants and the search parameters are passed down as props
+  // It renders a <main> tag containing the TeamListings component
+  // The initial list of teams and the search parameters are passed down as props
   return (
     <main className="main__home">
-      <RestaurantListings
-        initialRestaurants={restaurants}
+      <TeamListings
+        initialTeams={teams}
         searchParams={searchParams}
       />
     </main>

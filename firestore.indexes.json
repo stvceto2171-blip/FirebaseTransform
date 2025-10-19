@@ -1,11 +1,11 @@
 {
   "indexes": [
     {
-      "collectionGroup": "restaurants",
+      "collectionGroup": "teams",
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "category",
+          "fieldPath": "division",
           "order": "ASCENDING"
         },
         {
@@ -15,11 +15,11 @@
       ]
     },
     {
-      "collectionGroup": "restaurants",
+      "collectionGroup": "teams",
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "category",
+          "fieldPath": "division",
           "order": "ASCENDING"
         },
         {
@@ -29,21 +29,21 @@
       ]
     },
     {
-      "collectionGroup": "restaurants",
+      "collectionGroup": "teams",
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "category",
+          "fieldPath": "division",
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "price",
-          "order": "ASCENDING"
+          "fieldPath": "wins",
+          "order": "DESCENDING"
         }
       ]
     },
     {
-      "collectionGroup": "restaurants",
+      "collectionGroup": "teams",
       "queryScope": "COLLECTION",
       "fields": [
         {
@@ -57,7 +57,7 @@
       ]
     },
     {
-      "collectionGroup": "restaurants",
+      "collectionGroup": "teams",
       "queryScope": "COLLECTION",
       "fields": [
         {
@@ -71,7 +71,7 @@
       ]
     },
     {
-      "collectionGroup": "restaurants",
+      "collectionGroup": "teams",
       "queryScope": "COLLECTION",
       "fields": [
         {
@@ -79,17 +79,17 @@
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "price",
-          "order": "ASCENDING"
+          "fieldPath": "wins",
+          "order": "DESCENDING"
         }
       ]
     },
     {
-      "collectionGroup": "restaurants",
+      "collectionGroup": "teams",
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "price",
+          "fieldPath": "conference",
           "order": "ASCENDING"
         },
         {
@@ -99,11 +99,11 @@
       ]
     },
     {
-      "collectionGroup": "restaurants",
+      "collectionGroup": "teams",
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "price",
+          "fieldPath": "conference",
           "order": "ASCENDING"
         },
         {

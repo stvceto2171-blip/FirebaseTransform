@@ -1,4 +1,4 @@
-// The filters shown on the restaurant listings page
+// The filters shown on the team listings page
 
 import Tag from "@/src/components/Tag.jsx";
 
@@ -38,7 +38,7 @@ export default function Filters({ filters, setFilters }) {
         <summary>
           <img src="/filter.svg" alt="filter" />
           <div>
-            <p>Restaurants</p>
+            <p>NFL Teams</p>
             <p>Sorted by {filters.sort || "Rating"}</p>
           </div>
         </summary>
@@ -51,26 +51,21 @@ export default function Filters({ filters, setFilters }) {
           }}
         >
           <FilterSelect
-            label="Category"
+            label="Division"
             options={[
               "",
-              "Italian",
-              "Chinese",
-              "Japanese",
-              "Mexican",
-              "Indian",
-              "Mediterranean",
-              "Caribbean",
-              "Cajun",
-              "German",
-              "Russian",
-              "Cuban",
-              "Organic",
-              "Tapas",
+              "AFC East",
+              "AFC North",
+              "AFC South",
+              "AFC West",
+              "NFC East",
+              "NFC North",
+              "NFC South",
+              "NFC West",
             ]}
-            value={filters.category}
-            onChange={(event) => handleSelectionChange(event, "category")}
-            name="category"
+            value={filters.division}
+            onChange={(event) => handleSelectionChange(event, "division")}
+            name="division"
             icon="/food.svg"
           />
 
@@ -78,17 +73,36 @@ export default function Filters({ filters, setFilters }) {
             label="City"
             options={[
               "",
+              "Kansas City",
+              "Buffalo",
+              "Miami",
+              "Boston",
               "New York",
+              "Baltimore",
+              "Cincinnati",
+              "Cleveland",
+              "Pittsburgh",
+              "Houston",
+              "Indianapolis",
+              "Jacksonville",
+              "Nashville",
+              "Denver",
+              "Las Vegas",
               "Los Angeles",
-              "London",
-              "Paris",
-              "Tokyo",
-              "Mumbai",
-              "Dubai",
-              "Amsterdam",
-              "Seoul",
-              "Singapore",
-              "Istanbul",
+              "Dallas",
+              "Philadelphia",
+              "Washington",
+              "Chicago",
+              "Detroit",
+              "Green Bay",
+              "Minneapolis",
+              "Atlanta",
+              "Charlotte",
+              "New Orleans",
+              "Tampa Bay",
+              "Phoenix",
+              "San Francisco",
+              "Seattle",
             ]}
             value={filters.city}
             onChange={(event) => handleSelectionChange(event, "city")}
@@ -97,17 +111,17 @@ export default function Filters({ filters, setFilters }) {
           />
 
           <FilterSelect
-            label="Price"
-            options={["", "$", "$$", "$$$", "$$$$"]}
-            value={filters.price}
-            onChange={(event) => handleSelectionChange(event, "price")}
-            name="price"
+            label="Conference"
+            options={["", "AFC", "NFC"]}
+            value={filters.conference}
+            onChange={(event) => handleSelectionChange(event, "conference")}
+            name="conference"
             icon="/price.svg"
           />
 
           <FilterSelect
             label="Sort"
-            options={["Rating", "Review"]}
+            options={["Rating", "Wins", "Discussions"]}
             value={filters.sort}
             onChange={(event) => handleSelectionChange(event, "sort")}
             name="sort"
@@ -122,8 +136,8 @@ export default function Filters({ filters, setFilters }) {
                 onClick={() => {
                   setFilters({
                     city: "",
-                    category: "",
-                    price: "",
+                    division: "",
+                    conference: "",
                     sort: "",
                   });
                 }}

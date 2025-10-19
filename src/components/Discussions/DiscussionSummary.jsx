@@ -15,7 +15,7 @@ export async function GeminiSummary({ teamId }) {
   const prompt = `
     Based on the following team discussions, 
     where each discussion is separated by a '${discussionSeparator}' character, 
-    create a one-sentence summary of what people think of the team. 
+    create a one-sentence summary of what fans think of this NFL team. 
     
     Here are the discussions: ${discussions.map((discussion) => discussion.text).join(discussionSeparator)}
   `;
@@ -55,3 +55,8 @@ export function GeminiSummarySkeleton() {
     </div>
   );
 }
+
+
+
+
+

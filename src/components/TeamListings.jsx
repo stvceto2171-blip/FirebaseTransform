@@ -55,7 +55,7 @@ const TeamMetadata = ({ team }) => (
   </div>
 );
 
-export default function RestaurantListingsBackup({
+export default function TeamListings({
   initialTeams,
   searchParams,
 }) {
@@ -106,3 +106,8 @@ function routerWithFilters(router, filters) {
   const queryString = queryParams.toString();
   router.push(`?${queryString}`);
 }
+
+
+
+
+

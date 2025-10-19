@@ -10,6 +10,7 @@ import { cookies } from "next/headers";
 // - `initializeApp`: creates a standard Firebase app instance
 // - `initializeServerApp`: creates a Firebase app that can use client credentials on the server
 import { initializeServerApp, initializeApp } from "firebase/app";
+import firebaseConfig from "./config.js";
 
 // Import method to get the Firebase Authentication service for a given app
 import { getAuth } from "firebase/auth";
@@ -39,8 +40,8 @@ export async function getAuthenticatedAppForUser() {
    * safe way to hydrate user context during SSR.
    */
   const firebaseServerApp = initializeServerApp(
-    // The base Firebase App instance — no config needed if already initialized elsewhere
-    initializeApp(),
+    // The base Firebase App instance with configuration
+    initializeApp(firebaseConfig),
     {
       authIdToken, // Attach the user's authentication token
     }

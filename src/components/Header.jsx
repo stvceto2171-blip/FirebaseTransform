@@ -12,8 +12,8 @@ import {
   onIdTokenChanged,  // Listener that triggers when a user's ID token changes
 } from "@/src/lib/firebase/auth.js";
 
-// Import a Firestore helper to populate fake restaurants and reviews
-import { addFakeRestaurantsAndReviews } from "@/src/lib/firebase/firestore.js";
+// Import a Firestore helper to populate fake teams and discussions
+import { addFakeTeamsAndDiscussions } from "@/src/lib/firebase/firestore.js";
 
 // Import utilities for managing cookies
 import { setCookie, deleteCookie } from "cookies-next";
@@ -77,8 +77,8 @@ export default function Header({ initialUser }) {
     <header>
       {/* Logo and link to home page */}
       <Link href="/" className="logo">
-        <img src="/friendly-eats.svg" alt="FriendlyEats" />
-        Friendly Eats
+        <img src="/friendly-eats.svg" alt="NFL Teams Hub" />
+        NFL Teams Hub
       </Link>
 
       {/* Conditional rendering: show user profile if logged in, or sign-in button otherwise */}
@@ -103,8 +103,8 @@ export default function Header({ initialUser }) {
 
                 <li>
                   {/* Add sample data for testing/demo purposes */}
-                  <a href="#" onClick={addFakeRestaurantsAndReviews}>
-                    Add sample restaurants
+                  <a href="#" onClick={addFakeTeamsAndDiscussions}>
+                    Add sample teams
                   </a>
                 </li>
 

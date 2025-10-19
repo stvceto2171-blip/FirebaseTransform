@@ -1,5 +1,5 @@
-// Import helper function that generates mock restaurant and review data for testing or demo purposes
-import { generateFakeRestaurantsAndReviews } from "@/src/lib/fakeRestaurants.js";
+// Import helper function that generates mock team and discussion data for testing or demo purposes
+import { generateFakeTeamsAndDiscussions } from "@/src/lib/fakeTeams.js";
 
 // Import necessary Firestore functions from Firebase SDK
 import {
@@ -21,84 +21,84 @@ import {
 import { db } from "@/src/lib/firebase/clientApp";
 
 /**
- * Updates the photo URL reference for a restaurant document in Firestore.
- * @param {string} restaurantId - The restaurant’s Firestore document ID.
+ * Updates the photo URL reference for a team document in Firestore.
+ * @param {string} teamId - The team's Firestore document ID.
  * @param {string} publicImageUrl - The public image URL to store.
  */
-export async function updateRestaurantImageReference(restaurantId, publicImageUrl) {
-  // Get a reference to the specific restaurant document
-  const restaurantRef = doc(collection(db, "restaurants"), restaurantId);
+export async function updateTeamImageReference(teamId, publicImageUrl) {
+  // Get a reference to the specific team document
+  const teamRef = doc(collection(db, "teams"), teamId);
 
-  // Update the document’s photo field with the new image URL
-  if (restaurantRef) {
-    await updateDoc(restaurantRef, { photo: publicImageUrl });
+  // Update the document's photo field with the new image URL
+  if (teamRef) {
+    await updateDoc(teamRef, { photo: publicImageUrl });
   }
 }
 
 /**
- * Internal helper for Firestore transaction that updates restaurant rating statistics.
- * Calculates and updates new averages after a review is added.
+ * Internal helper for Firestore transaction that updates team rating statistics.
+ * Calculates and updates new averages after a discussion is added.
  */
-const updateWithRating = async (transaction, docRef, newRatingDocument, review) => {
-  // Read the current restaurant document inside a transaction
-  const restaurant = await transaction.get(docRef);
-  const data = restaurant.data();
+const updateWithRating = async (transaction, docRef, newDiscussionDocument, discussion) => {
+  // Read the current team document inside a transaction
+  const team = await transaction.get(docRef);
+  const data = team.data();
 
   // Compute updated rating statistics
   const newNumRatings = data?.numRatings ? data.numRatings + 1 : 1;
-  const newSumRating = (data?.sumRating || 0) + Number(review.rating);
+  const newSumRating = (data?.sumRating || 0) + Number(discussion.rating);
   const newAverage = newSumRating / newNumRatings;
 
-  // Update restaurant’s aggregate rating data
+  // Update team's aggregate rating data
   transaction.update(docRef, {
     numRatings: newNumRatings,
     sumRating: newSumRating,
     avgRating: newAverage,
   });
 
-  // Add the new review under the restaurant’s “ratings” subcollection
-  transaction.set(newRatingDocument, {
-    ...review,
+  // Add the new discussion under the team's "discussions" subcollection
+  transaction.set(newDiscussionDocument, {
+    ...discussion,
     timestamp: Timestamp.fromDate(new Date()), // Use a server-friendly timestamp
   });
 };
 
 /**
- * Adds a new review document and updates the restaurant’s rating statistics atomically.
+ * Adds a new discussion document and updates the team's rating statistics atomically.
  */
-export async function addReviewToRestaurant(db, restaurantId, review) {
-  if (!restaurantId) {
-    throw new Error("No restaurant ID has been provided.");
+export async function addDiscussionToTeam(db, teamId, discussion) {
+  if (!teamId) {
+    throw new Error("No team ID has been provided.");
   }
 
-  if (!review) {
-    throw new Error("A valid review has not been provided.");
+  if (!discussion) {
+    throw new Error("A valid discussion has not been provided.");
   }
 
   try {
-    // Get a reference to the restaurant document
-    const docRef = doc(collection(db, "restaurants"), restaurantId);
+    // Get a reference to the team document
+    const docRef = doc(collection(db, "teams"), teamId);
 
-    // Prepare a new review document reference within the ratings subcollection
-    const newRatingDocument = doc(collection(db, `restaurants/${restaurantId}/ratings`));
+    // Prepare a new discussion document reference within the discussions subcollection
+    const newDiscussionDocument = doc(collection(db, `teams/${teamId}/discussions`));
 
-    // Run Firestore transaction to update both restaurant and review atomically
+    // Run Firestore transaction to update both team and discussion atomically
     await runTransaction(db, (transaction) =>
-      updateWithRating(transaction, docRef, newRatingDocument, review)
+      updateWithRating(transaction, docRef, newDiscussionDocument, discussion)
     );
   } catch (error) {
-    console.error("There was an error adding the rating to the restaurant", error);
+    console.error("There was an error adding the discussion to the team", error);
     throw error;
   }
 }
 
 /**
- * Helper function that applies filtering and sorting to a Firestore restaurant query.
+ * Helper function that applies filtering and sorting to a Firestore team query.
  */
-function applyQueryFilters(q, { category, city, price, sort }) {
-  // Filter by category, if specified
-  if (category) {
-    q = query(q, where("category", "==", category));
+function applyQueryFilters(q, { division, city, conference, sort }) {
+  // Filter by division, if specified
+  if (division) {
+    q = query(q, where("division", "==", division));
   }
 
   // Filter by city, if specified
@@ -106,15 +106,17 @@ function applyQueryFilters(q, { category, city, price, sort }) {
     q = query(q, where("city", "==", city));
   }
 
-  // Filter by price level (represented by string length of price symbols like "$$")
-  if (price) {
-    q = query(q, where("price", "==", price.length));
+  // Filter by conference, if specified
+  if (conference) {
+    q = query(q, where("conference", "==", conference));
   }
 
-  // Sort results based on user’s selected sort option
+  // Sort results based on user's selected sort option
   if (sort === "Rating" || !sort) {
     q = query(q, orderBy("avgRating", "desc"));
-  } else if (sort === "Review") {
+  } else if (sort === "Wins") {
+    q = query(q, orderBy("wins", "desc"));
+  } else if (sort === "Discussions") {
     q = query(q, orderBy("numRatings", "desc"));
   }
 
@@ -122,11 +124,11 @@ function applyQueryFilters(q, { category, city, price, sort }) {
 }
 
 /**
- * Retrieves a list of restaurants from Firestore, optionally filtered/sorted.
+ * Retrieves a list of teams from Firestore, optionally filtered/sorted.
  * Converts Firestore timestamps into plain Date objects.
  */
-export async function getRestaurants(db = db, filters = {}) {
-  let q = query(collection(db, "restaurants"));
+export async function getTeams(db = db, filters = {}) {
+  let q = query(collection(db, "teams"));
   q = applyQueryFilters(q, filters);
 
   const results = await getDocs(q);
@@ -140,16 +142,16 @@ export async function getRestaurants(db = db, filters = {}) {
 }
 
 /**
- * Sets up a real-time listener for the restaurants collection.
+ * Sets up a real-time listener for the teams collection.
  * Calls the provided callback whenever data changes.
  */
-export function getRestaurantsSnapshot(cb, filters = {}) {
+export function getTeamsSnapshot(cb, filters = {}) {
   if (typeof cb !== "function") {
     console.log("Error: The callback parameter is not a function");
     return;
   }
 
-  let q = query(collection(db, "restaurants"));
+  let q = query(collection(db, "teams"));
   q = applyQueryFilters(q, filters);
 
   // Listen to snapshot changes in real-time
@@ -165,15 +167,15 @@ export function getRestaurantsSnapshot(cb, filters = {}) {
 }
 
 /**
- * Fetch a single restaurant document by its Firestore ID.
+ * Fetch a single team document by its Firestore ID.
  */
-export async function getRestaurantById(db, restaurantId) {
-  if (!restaurantId) {
-    console.log("Error: Invalid ID received: ", restaurantId);
+export async function getTeamById(db, teamId) {
+  if (!teamId) {
+    console.log("Error: Invalid ID received: ", teamId);
     return;
   }
 
-  const docRef = doc(db, "restaurants", restaurantId);
+  const docRef = doc(db, "teams", teamId);
   const docSnap = await getDoc(docRef);
 
   return {
@@ -183,11 +185,11 @@ export async function getRestaurantById(db, restaurantId) {
 }
 
 /**
- * Real-time listener for updates to a single restaurant document.
+ * Real-time listener for updates to a single team document.
  */
-export function getRestaurantSnapshotById(restaurantId, cb) {
-  if (!restaurantId) {
-    console.log("Error: Invalid ID received: ", restaurantId);
+export function getTeamSnapshotById(teamId, cb) {
+  if (!teamId) {
+    console.log("Error: Invalid ID received: ", teamId);
     return;
   }
 
@@ -196,7 +198,7 @@ export function getRestaurantSnapshotById(restaurantId, cb) {
     return;
   }
 
-  const docRef = doc(db, "restaurants", restaurantId);
+  const docRef = doc(db, "teams", teamId);
   return onSnapshot(docRef, (docSnap) => {
     cb({
       ...docSnap.data(),
@@ -206,16 +208,16 @@ export function getRestaurantSnapshotById(restaurantId, cb) {
 }
 
 /**
- * Fetch all reviews for a specific restaurant, ordered by most recent first.
+ * Fetch all discussions for a specific team, ordered by most recent first.
  */
-export async function getReviewsByRestaurantId(db, restaurantId) {
-  if (!restaurantId) {
-    console.log("Error: Invalid restaurantId received: ", restaurantId);
+export async function getDiscussionsByTeamId(db, teamId) {
+  if (!teamId) {
+    console.log("Error: Invalid teamId received: ", teamId);
     return;
   }
 
   const q = query(
-    collection(db, "restaurants", restaurantId, "ratings"),
+    collection(db, "teams", teamId, "discussions"),
     orderBy("timestamp", "desc")
   );
 
@@ -229,21 +231,21 @@ export async function getReviewsByRestaurantId(db, restaurantId) {
 }
 
 /**
- * Real-time listener for reviews on a specific restaurant.
- * Updates the provided callback whenever reviews change.
+ * Real-time listener for discussions on a specific team.
+ * Updates the provided callback whenever discussions change.
  */
-export function getReviewsSnapshotByRestaurantId(restaurantId, cb) {
-  if (!restaurantId) {
-    console.log("Error: Invalid restaurantId received: ", restaurantId);
+export function getDiscussionsSnapshotByTeamId(teamId, cb) {
+  if (!teamId) {
+    console.log("Error: Invalid teamId received: ", teamId);
     return;
   }
 
   const q = query(
-    collection(db, "restaurants", restaurantId, "ratings"),
+    collection(db, "teams", teamId, "discussions"),
     orderBy("timestamp", "desc")
   );
 
-  // Subscribe to real-time updates on this restaurant’s reviews
+  // Subscribe to real-time updates on this team's discussions
   return onSnapshot(q, (querySnapshot) => {
     const results = querySnapshot.docs.map((doc) => ({
       id: doc.id,
@@ -255,21 +257,21 @@ export function getReviewsSnapshotByRestaurantId(restaurantId, cb) {
 }
 
 /**
- * Seeds the Firestore database with fake restaurant and review data.
+ * Seeds the Firestore database with fake team and discussion data.
  * Useful for testing and demo environments.
  */
-export async function addFakeRestaurantsAndReviews() {
-  // Generate fake restaurant and review data
-  const data = await generateFakeRestaurantsAndReviews();
+export async function addFakeTeamsAndDiscussions() {
+  // Generate fake team and discussion data
+  const data = await generateFakeTeamsAndDiscussions();
 
-  for (const { restaurantData, ratingsData } of data) {
+  for (const { teamData, discussionsData } of data) {
     try {
-      // Add each fake restaurant to Firestore
-      const docRef = await addDoc(collection(db, "restaurants"), restaurantData);
+      // Add each fake team to Firestore
+      const docRef = await addDoc(collection(db, "teams"), teamData);
 
-      // Add each associated review under the restaurant’s “ratings” subcollection
-      for (const ratingData of ratingsData) {
-        await addDoc(collection(db, "restaurants", docRef.id, "ratings"), ratingData);
+      // Add each associated discussion under the team's "discussions" subcollection
+      for (const discussionData of discussionsData) {
+        await addDoc(collection(db, "teams", docRef.id, "discussions"), discussionData);
       }
     } catch (e) {
       console.log("There was an error adding the document");
