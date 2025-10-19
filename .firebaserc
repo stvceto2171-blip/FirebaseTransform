@@ -1,7 +1,8 @@
 {
   "projects": {
     "codelab": "codelab-bd1af",
-    "FirebaseTransform": "fir-transform"
+    "FirebaseTransform": "fir-transform",
+    "FierbaseTransform": "fir-transform"
   },
   "targets": {},
   "etags": {}
