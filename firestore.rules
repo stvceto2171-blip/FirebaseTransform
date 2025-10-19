@@ -11,26 +11,33 @@ service cloud.firestore {
 
   match /databases/{database}/documents {
     // Teams:
-    //   - Authenticated user can read
-    //   - Authenticated user can create/update (for demo purposes only)
-    //   - Updates are allowed if no fields are added and name is unchanged
-    //   - Deletes are not allowed (default)
+    //    - Authenticated user can read
+    //    - Authenticated user can create/update (for demo purposes only)
+    //    - Updates are allowed if no fields are added and name is unchanged
+    //    - Deletes are not allowed (default)
     match /teams/{teamId} {
       allow read;
       allow create: if request.auth != null;
       allow update: if request.auth != null
-                    && unchanged("name");
+                        && unchanged("name");
       
         // Discussions:
-        //   - Authenticated user can read
-        //   - Authenticated user can create if userId matches
-        //   - Deletes and updates are not allowed (default)
+        //    - Authenticated user can read
+        //    - Authenticated user can create if userId matches
+        //    - Updates are allowed if the user is the original author and doesn't change the userId
+        //    - Deletes are not allowed (default)
         match /discussions/{discussionId} {
           allow read;
-          allow create: if request.auth != null;
-          allow update: if request.auth != null
-                        && request.resource.data.userId == request.auth.uid;
-      }
+          
+          // FIX: Ensure the submitted userId matches the authenticated user's UID
+          allow create: if request.auth != null 
+                        && request.resource.data.userId == request.auth.uid; 
+          
+          // FIX: Ensure the user is the original author and is not changing the author
+          allow update: if request.auth != null 
+                        && resource.data.userId == request.auth.uid
+                        && unchanged('userId');
+       }
     }
   }
 }
